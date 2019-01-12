@@ -1,0 +1,41 @@
+{
+  "name": "with-rematch",
+  "version": "1.0.0",
+  "description": "A HoC that implement reducer a la Rematch",
+  "source": "src",
+  "main": "dist/with-rematch.cjs.js",
+  "module": "dist/with-rematch.esm.js",
+  "browser": "dist/with-rematch.umd.js",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "pretest": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/russiann/with-rematch.git"
+  },
+  "keywords": [
+    "redux",
+    "reducer",
+    "rematch",
+    "hoc"
+  ],
+  "author": "Russian Rebouças",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/russiann/with-rematch/issues"
+  },
+  "homepage": "https://github.com/russiann/with-rematch#readme",
+  "dependencies": {
+    "react": "^16.7.0"
+  },
+  "devDependencies": {
+    "rollup": "^0.63.4",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0"
+  }
+}
