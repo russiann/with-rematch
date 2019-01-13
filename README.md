@@ -5,9 +5,9 @@
 ## Instalation
 
 ```
-npm install -g use-rematch
+npm install -g with-rematch
 or
-yarn add use-rematch
+yarn add with-rematch
 ```
 
 ## Usage
