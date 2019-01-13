@@ -1,6 +1,6 @@
 {
   "name": "with-rematch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A HoC that implement reducer a la Rematch",
   "source": "src",
   "main": "dist/with-rematch.cjs.js",
