@@ -84,7 +84,11 @@ const createEffects = (model, dispatch, actions, state, props) => {
   );
 };
 
-const withRematch = model => WrappedComponent => {
+const defaults = {
+  mapProps: props => props
+};
+
+const withRematch = (model, config = defaults) => WrappedComponent => {
   const factory = React.createFactory(WrappedComponent);
   const reducer = createReducer(model);
   return withReducer(reducer)(
@@ -142,11 +146,12 @@ const withRematch = model => WrappedComponent => {
         const actions = createActions(model, dispatch, props);
         const effects = createEffects(model, dispatch, actions, state, props);
 
-        return factory({
-          ...props,
+        const modelProps = config.mapProps({
           state: state,
           actions: this.actions
         });
+
+        return factory({...props, ...modelProps});
       }
     }
   );

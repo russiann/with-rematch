@@ -2090,7 +2090,14 @@
 	  );
 	};
 
-	var withRematch = function (model) { return function (WrappedComponent) {
+	var defaults = {
+	  mapProps: function (props) { return props; }
+	};
+
+	var withRematch = function (model, config) {
+	  if ( config === void 0 ) config = defaults;
+
+	  return function (WrappedComponent) {
 	  var factory = react.createFactory(WrappedComponent);
 	  var reducer = createReducer(model);
 	  return withReducer(reducer)(
@@ -2184,15 +2191,19 @@
 	        var actions = createActions(model, dispatch, props);
 	        var effects = createEffects(model, dispatch, actions, state, props);
 
-	        return factory(Object.assign({}, props,
-	          {state: state,
-	          actions: this.actions}));
+	        var modelProps = config.mapProps({
+	          state: state,
+	          actions: this.actions
+	        });
+
+	        return factory(Object.assign({}, props, modelProps));
 	      };
 
 	    return WithRematch;
 	  }(react.Component))
 	  );
-	}; };
+	};
+	};
 
 	return withRematch;
 
