@@ -2037,9 +2037,12 @@
 	    };
 
 	    WithReducer.prototype.render = function render () {
+	      var this$1 = this;
+
 	      return factory(Object.assign({}, this.props,
 	        {state: this.state.stateValue,
-	        dispatch: this.dispatch.bind(this)}));
+	        dispatch: this.dispatch.bind(this),
+	        getState: function () { return this$1.state.stateValue; }}));
 	    };
 
 	    return WithReducer;
@@ -2073,7 +2076,7 @@
 	  );
 	};
 
-	var createEffects = function (model, dispatch, actions, state, props) {
+	var createEffects = function (model, dispatch, actions, getState, props) {
 	  if (!model.effects) { return {}; }
 	  var effects = model.effects(actions);
 	  return Object.keys(effects || []).reduce(
@@ -2082,8 +2085,7 @@
 
 	      return (Object.assign({}, actions,
 	      ( obj = {}, obj[type] = function (payload) {
-	        dispatch({type: type, payload: payload});
-	        effects[type](payload, state, props);
+	        effects[type](payload, getState(), props);
 	      }, obj )));
 	  },
 	    {}
@@ -2100,8 +2102,8 @@
 	  return function (WrappedComponent) {
 	  var factory = react.createFactory(WrappedComponent);
 	  var reducer = createReducer(model);
-	  return withReducer(reducer)(
-	    /*@__PURE__*/(function (superclass) {
+
+	  var WithRematch = /*@__PURE__*/(function (superclass) {
 	    function WithRematch () {
 	      superclass.apply(this, arguments);
 	    }
@@ -2110,98 +2112,101 @@
 	    WithRematch.prototype = Object.create( superclass && superclass.prototype );
 	    WithRematch.prototype.constructor = WithRematch;
 
+	    WithRematch.prototype.init = function init () {
+	      var ref = this.props;
+	      var dispatch = ref.dispatch;
+	      var state = ref.state;
+	      var getState = ref.getState;
+	      var rest = objectWithoutProperties( ref, ["dispatch", "state", "getState"] );
+	      var props = rest;
+	      var actions = createActions(model, dispatch, props);
+	      var effects = createEffects(model, dispatch, actions, getState, props);
+	      this.actions = Object.assign({}, actions, effects);
+	      return {state: state, actions: this.actions};
+	    };
+
 	    WithRematch.prototype.componentWillMount = function componentWillMount () {
-	        var ref = this.props;
-	        var dispatch = ref.dispatch;
-	        var state = ref.state;
-	        var rest = objectWithoutProperties( ref, ["dispatch", "state"] );
-	        var props = rest;
-	        var actions = createActions(model, dispatch, props);
-	        var effects = createEffects(model, dispatch, actions, state, props);
-	        this.actions = Object.assign({}, actions, effects);
+	      this.init();
 
-	        if (model.lifecycle && model.lifecycle.componentWillMount) {
-	          model.lifecycle.componentWillMount.call(this);
-	        }
-	      };
+	      if (model.lifecycle && model.lifecycle.componentWillMount) {
+	        model.lifecycle.componentWillMount.call(this);
+	      }
+	    };
 
-	      WithRematch.prototype.componentDidMount = function componentDidMount () {
-	        if (model.lifecycle && model.lifecycle.componentDidMount) {
-	          model.lifecycle.componentDidMount.call(this);
-	        }
-	      };
+	    WithRematch.prototype.componentDidMount = function componentDidMount () {
+	      if (model.lifecycle && model.lifecycle.componentDidMount) {
+	        model.lifecycle.componentDidMount.call(this);
+	      }
+	    };
 
-	      WithRematch.prototype.componentWillReceiveProps = function componentWillReceiveProps () {
-	        var ref;
+	    WithRematch.prototype.componentWillReceiveProps = function componentWillReceiveProps () {
+	      var ref;
 
-	        var args = [], len = arguments.length;
-	        while ( len-- ) args[ len ] = arguments[ len ];
-	        if (model.lifecycle && model.lifecycle.componentWillReceiveProps) {
-	          (ref = model.lifecycle.componentWillReceiveProps).call.apply(ref, [ this ].concat( args ));
-	        }
-	      };
+	      var args = [], len = arguments.length;
+	      while ( len-- ) args[ len ] = arguments[ len ];
+	      if (model.lifecycle && model.lifecycle.componentWillReceiveProps) {
+	        (ref = model.lifecycle.componentWillReceiveProps).call.apply(ref, [ this ].concat( args ));
+	      }
+	    };
 
-	      WithRematch.prototype.shouldComponentUpdate = function shouldComponentUpdate () {
-	        var ref;
+	    WithRematch.prototype.shouldComponentUpdate = function shouldComponentUpdate () {
+	      var ref;
 
-	        var args = [], len = arguments.length;
-	        while ( len-- ) args[ len ] = arguments[ len ];
-	        if (model.lifecycle && model.lifecycle.shouldComponentUpdate) {
-	          return (ref = model.lifecycle.shouldComponentUpdate).call.apply(ref, [ this ].concat( args ));
-	        }
-	        return true;
-	      };
+	      var args = [], len = arguments.length;
+	      while ( len-- ) args[ len ] = arguments[ len ];
+	      if (model.lifecycle && model.lifecycle.shouldComponentUpdate) {
+	        return (ref = model.lifecycle.shouldComponentUpdate).call.apply(ref, [ this ].concat( args ));
+	      }
+	      return true;
+	    };
 
-	      WithRematch.prototype.componentWillUpdate = function componentWillUpdate () {
-	        var ref;
+	    WithRematch.prototype.componentWillUpdate = function componentWillUpdate () {
+	      var ref;
 
-	        var args = [], len = arguments.length;
-	        while ( len-- ) args[ len ] = arguments[ len ];
-	        if (model.lifecycle && model.lifecycle.componentWillUpdate) {
-	          return (ref = model.lifecycle.componentWillUpdate).call.apply(ref, [ this ].concat( args ));
-	        }
-	      };
+	      var args = [], len = arguments.length;
+	      while ( len-- ) args[ len ] = arguments[ len ];
+	      if (model.lifecycle && model.lifecycle.componentWillUpdate) {
+	        return (ref = model.lifecycle.componentWillUpdate).call.apply(ref, [ this ].concat( args ));
+	      }
+	    };
 
-	      WithRematch.prototype.componentDidUpdate = function componentDidUpdate () {
-	        var ref;
+	    WithRematch.prototype.componentDidUpdate = function componentDidUpdate () {
+	      var ref;
 
-	        var args = [], len = arguments.length;
-	        while ( len-- ) args[ len ] = arguments[ len ];
-	        if (model.lifecycle && model.lifecycle.componentDidUpdate) {
-	          (ref = model.lifecycle.componentDidUpdate).call.apply(ref, [ this ].concat( args ));
-	        }
-	      };
+	      var args = [], len = arguments.length;
+	      while ( len-- ) args[ len ] = arguments[ len ];
+	      if (model.lifecycle && model.lifecycle.componentDidUpdate) {
+	        (ref = model.lifecycle.componentDidUpdate).call.apply(ref, [ this ].concat( args ));
+	      }
+	    };
 
-	      WithRematch.prototype.componentWillUnmount = function componentWillUnmount () {
-	        var ref;
+	    WithRematch.prototype.componentWillUnmount = function componentWillUnmount () {
+	      var ref;
 
-	        var args = [], len = arguments.length;
-	        while ( len-- ) args[ len ] = arguments[ len ];
-	        if (model.lifecycle && model.lifecycle.componentWillUnmount) {
-	          (ref = model.lifecycle.componentWillUnmount).call.apply(ref, [ this ].concat( args ));
-	        }
-	      };
+	      var args = [], len = arguments.length;
+	      while ( len-- ) args[ len ] = arguments[ len ];
+	      if (model.lifecycle && model.lifecycle.componentWillUnmount) {
+	        (ref = model.lifecycle.componentWillUnmount).call.apply(ref, [ this ].concat( args ));
+	      }
+	    };
 
-	      WithRematch.prototype.render = function render () {
-	        var ref = this.props;
-	        var dispatch = ref.dispatch;
-	        var state = ref.state;
-	        var rest = objectWithoutProperties( ref, ["dispatch", "state"] );
-	        var props = rest;
-	        var actions = createActions(model, dispatch, props);
-	        var effects = createEffects(model, dispatch, actions, state, props);
+	    WithRematch.prototype.render = function render () {
+	      var ref = this.init();
+	      var state = ref.state;
+	      var actions = ref.actions;
 
-	        var modelProps = config.mapProps({
-	          state: state,
-	          actions: this.actions
-	        });
+	      var modelProps = config.mapProps({
+	        state: state,
+	        actions: actions
+	      });
 
-	        return factory(Object.assign({}, props, modelProps));
-	      };
+	      return factory(Object.assign({}, this.props, modelProps));
+	    };
 
 	    return WithRematch;
-	  }(react.Component))
-	  );
+	  }(react.Component));
+
+	  return withReducer(reducer)(WithRematch);
 	};
 	};
 
