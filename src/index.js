@@ -40,7 +40,8 @@ const withReducer = (reducer, initialState) => BaseComponent => {
       return factory({
         ...this.props,
         state: this.state.stateValue,
-        dispatch: this.dispatch.bind(this)
+        dispatch: this.dispatch.bind(this),
+        getState: () => this.state.stateValue
       });
     }
   }
@@ -69,15 +70,14 @@ const createActions = (model, dispatch, props) => {
   );
 };
 
-const createEffects = (model, dispatch, actions, state, props) => {
+const createEffects = (model, dispatch, actions, getState, props) => {
   if (!model.effects) return {};
   const effects = model.effects(actions);
   return Object.keys(effects || []).reduce(
     (actions, type) => ({
       ...actions,
       [type]: payload => {
-        dispatch({type, payload});
-        effects[type](payload, state, props);
+        effects[type](payload, getState(), props);
       }
     }),
     {}
@@ -94,9 +94,9 @@ const withRematch = (model, config = defaults) => WrappedComponent => {
 
   class WithRematch extends React.Component {
     init() {
-      const {dispatch, state, ...props} = this.props;
+      const {dispatch, state, getState, ...props} = this.props;
       const actions = createActions(model, dispatch, props);
-      const effects = createEffects(model, dispatch, actions, state, props);
+      const effects = createEffects(model, dispatch, actions, getState, props);
       this.actions = {...actions, ...effects};
       return {state, actions: this.actions};
     }
@@ -154,7 +154,7 @@ const withRematch = (model, config = defaults) => WrappedComponent => {
         actions: actions
       });
 
-      return factory({...props, ...modelProps});
+      return factory({...this.props, ...modelProps});
     }
   }
 
