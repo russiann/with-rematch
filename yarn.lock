@@ -10,6 +10,12 @@
   version "10.11.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.4.tgz#e8bd933c3f78795d580ae41d86590bfc1f4f389d"
 
+ansi-styles@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"
+  dependencies:
+    color-convert "^1.9.0"
+
 arr-diff@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/arr-diff/-/arr-diff-2.0.0.tgz#8f3b827f955a8bd669697e4a4256ac3ceae356cf"
@@ -32,9 +38,42 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
+buble@^0.19.6:
+  version "0.19.6"
+  resolved "https://registry.yarnpkg.com/buble/-/buble-0.19.6.tgz#915909b6bd5b11ee03b1c885ec914a8b974d34d3"
+  dependencies:
+    chalk "^2.4.1"
+    magic-string "^0.25.1"
+    minimist "^1.2.0"
+    os-homedir "^1.0.1"
+    regexpu-core "^4.2.0"
+    vlq "^1.0.0"
+
 builtin-modules@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-2.0.0.tgz#60b7ef5ae6546bd7deefa74b08b62a43a232648e"
+
+chalk@^2.4.1:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
+  dependencies:
+    ansi-styles "^3.2.1"
+    escape-string-regexp "^1.0.5"
+    supports-color "^5.3.0"
+
+color-convert@^1.9.0:
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
+  dependencies:
+    color-name "1.1.3"
+
+color-name@1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
+
+escape-string-regexp@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
 
 estree-walker@^0.5.1, estree-walker@^0.5.2:
   version "0.5.2"
@@ -94,6 +133,10 @@ glob-parent@^2.0.0:
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-2.0.0.tgz#81383d72db054fcccf5336daa902f182f6edbb28"
   dependencies:
     is-glob "^2.0.0"
+
+has-flag@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"
 
 is-buffer@^1.1.5:
   version "1.1.6"
@@ -159,6 +202,10 @@ isobject@^2.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
 
+jsesc@~0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
+
 kind-of@^3.0.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
@@ -180,6 +227,12 @@ magic-string@^0.22.4:
   resolved "http://registry.npmjs.org/magic-string/-/magic-string-0.22.5.tgz#8e9cf5afddf44385c1da5bc2a6a0dbd10b03657e"
   dependencies:
     vlq "^0.2.2"
+
+magic-string@^0.25.1:
+  version "0.25.1"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.1.tgz#b1c248b399cd7485da0fe7385c2fc7011843266e"
+  dependencies:
+    sourcemap-codec "^1.4.1"
 
 math-random@^1.0.1:
   version "1.0.1"
@@ -203,6 +256,10 @@ micromatch@^2.3.11:
     parse-glob "^3.0.4"
     regex-cache "^0.4.2"
 
+minimist@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
+
 normalize-path@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-2.1.1.tgz#1ab28b556e198363a8c1a6f7e6fa20137fe6aed9"
@@ -219,6 +276,10 @@ object.omit@^2.0.0:
   dependencies:
     for-own "^0.1.4"
     is-extendable "^0.1.1"
+
+os-homedir@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
 
 parse-glob@^3.0.4:
   version "3.0.4"
@@ -261,11 +322,42 @@ react@^16.7.0:
     prop-types "^15.6.2"
     scheduler "^0.12.0"
 
+regenerate-unicode-properties@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-7.0.0.tgz#107405afcc4a190ec5ed450ecaa00ed0cafa7a4c"
+  dependencies:
+    regenerate "^1.4.0"
+
+regenerate@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.0.tgz#4a856ec4b56e4077c557589cae85e7a4c8869a11"
+
 regex-cache@^0.4.2:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/regex-cache/-/regex-cache-0.4.4.tgz#75bdc58a2a1496cec48a12835bc54c8d562336dd"
   dependencies:
     is-equal-shallow "^0.1.3"
+
+regexpu-core@^4.2.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/regexpu-core/-/regexpu-core-4.4.0.tgz#8d43e0d1266883969720345e70c275ee0aec0d32"
+  dependencies:
+    regenerate "^1.4.0"
+    regenerate-unicode-properties "^7.0.0"
+    regjsgen "^0.5.0"
+    regjsparser "^0.6.0"
+    unicode-match-property-ecmascript "^1.0.4"
+    unicode-match-property-value-ecmascript "^1.0.2"
+
+regjsgen@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/regjsgen/-/regjsgen-0.5.0.tgz#a7634dc08f89209c2049adda3525711fb97265dd"
+
+regjsparser@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.6.0.tgz#f1e6ae8b7da2bae96c99399b868cd6c933a2ba9c"
+  dependencies:
+    jsesc "~0.5.0"
 
 remove-trailing-separator@^1.0.1:
   version "1.1.0"
@@ -285,6 +377,13 @@ resolve@^1.1.6, resolve@^1.5.0:
   dependencies:
     path-parse "^1.0.5"
 
+rollup-plugin-buble@^0.19.6:
+  version "0.19.6"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-buble/-/rollup-plugin-buble-0.19.6.tgz#55ee0995d8870d536f01f4277c3eef4276e8747e"
+  dependencies:
+    buble "^0.19.6"
+    rollup-pluginutils "^2.3.3"
+
 rollup-plugin-commonjs@^9.1.0:
   version "9.1.8"
   resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-9.1.8.tgz#4113ed94e6054b5f8a3501d8811f934cadde3246"
@@ -302,7 +401,7 @@ rollup-plugin-node-resolve@^3.0.0:
     is-module "^1.0.0"
     resolve "^1.1.6"
 
-rollup-pluginutils@^2.0.1:
+rollup-pluginutils@^2.0.1, rollup-pluginutils@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.3.3.tgz#3aad9b1eb3e7fe8262820818840bf091e5ae6794"
   dependencies:
@@ -323,6 +422,39 @@ scheduler@^0.12.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
 
+sourcemap-codec@^1.4.1:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.4.tgz#c63ea927c029dd6bd9a2b7fa03b3fec02ad56e9f"
+
+supports-color@^5.3.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-5.5.0.tgz#e2e69a44ac8772f78a1ec0b35b689df6530efc8f"
+  dependencies:
+    has-flag "^3.0.0"
+
+unicode-canonical-property-names-ecmascript@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/unicode-canonical-property-names-ecmascript/-/unicode-canonical-property-names-ecmascript-1.0.4.tgz#2619800c4c825800efdd8343af7dd9933cbe2818"
+
+unicode-match-property-ecmascript@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/unicode-match-property-ecmascript/-/unicode-match-property-ecmascript-1.0.4.tgz#8ed2a32569961bce9227d09cd3ffbb8fed5f020c"
+  dependencies:
+    unicode-canonical-property-names-ecmascript "^1.0.4"
+    unicode-property-aliases-ecmascript "^1.0.4"
+
+unicode-match-property-value-ecmascript@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/unicode-match-property-value-ecmascript/-/unicode-match-property-value-ecmascript-1.0.2.tgz#9f1dc76926d6ccf452310564fd834ace059663d4"
+
+unicode-property-aliases-ecmascript@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/unicode-property-aliases-ecmascript/-/unicode-property-aliases-ecmascript-1.0.4.tgz#5a533f31b4317ea76f17d807fa0d116546111dd0"
+
 vlq@^0.2.2:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/vlq/-/vlq-0.2.3.tgz#8f3e4328cf63b1540c0d67e1b2778386f8975b26"
+
+vlq@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/vlq/-/vlq-1.0.0.tgz#8101be90843422954c2b13eb27f2f3122bdcc806"
