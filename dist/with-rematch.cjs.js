@@ -81,7 +81,7 @@ const createEffects = (model, dispatch, actions, getState, props) => {
     (actions, type) => ({
       ...actions,
       [type]: payload => {
-        effects[type](payload, getState(), props);
+        return effects[type](payload, getState(), props);
       }
     }),
     {}

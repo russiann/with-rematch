@@ -2085,7 +2085,7 @@
 
 	      return (Object.assign({}, actions,
 	      ( obj = {}, obj[type] = function (payload) {
-	        effects[type](payload, getState(), props);
+	        return effects[type](payload, getState(), props);
 	      }, obj )));
 	  },
 	    {}
