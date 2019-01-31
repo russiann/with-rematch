@@ -2,52 +2,30 @@ import React from 'react';
 
 const noop = () => {};
 
+const deepClone = obj => {
+  let clone = Object.assign({}, obj);
+  Object.keys(clone).forEach(
+    key =>
+      (clone[key] =
+        typeof obj[key] === 'object' ? deepClone(obj[key]) : obj[key])
+  );
+  return Array.isArray(obj) && obj.length
+    ? (clone.length = obj.length) && Array.from(clone)
+    : Array.isArray(obj)
+    ? Array.from(obj)
+    : clone;
+};
+
+const mapProps = props => props;
+const defaults = {
+  mapProps: props => props
+};
+
 /**
 |--------------------------------------------------
-| WithReducer
+| COMPONENTE
 |--------------------------------------------------
 */
-
-const withReducer = (reducer, initialState) => BaseComponent => {
-  const factory = React.createFactory(BaseComponent);
-  class WithReducer extends React.Component {
-    constructor() {
-      super();
-      this.state = {
-        stateValue: this.initializeStateValue()
-      };
-    }
-
-    initializeStateValue() {
-      if (initialState !== undefined) {
-        return typeof initialState === 'function'
-          ? initialState(this.props)
-          : initialState;
-      }
-      return reducer(undefined, {type: '@@withReducer/INIT'});
-    }
-
-    dispatch(action, callback = noop) {
-      this.setState(
-        ({stateValue}) => ({
-          stateValue: reducer(stateValue, action)
-        }),
-        () => callback(this.state.stateValue)
-      );
-    }
-
-    render() {
-      return factory({
-        ...this.props,
-        state: this.state.stateValue,
-        dispatch: this.dispatch.bind(this),
-        getState: () => this.state.stateValue
-      });
-    }
-  }
-
-  return WithReducer;
-};
 
 /**
 |--------------------------------------------------
@@ -70,34 +48,85 @@ const createActions = (model, dispatch, props) => {
   );
 };
 
-const createEffects = (model, dispatch, actions, getState, props) => {
+const createEffects = (
+  model,
+  dispatch,
+  actions,
+  getState,
+  props,
+  getRef,
+  helpers
+) => {
   if (!model.effects) return {};
   const effects = model.effects(actions);
   return Object.keys(effects || []).reduce(
     (actions, type) => ({
       ...actions,
       [type]: payload => {
-        return effects[type](payload, getState(), props);
+        return effects[type](payload, getState(), props, helpers, getRef);
       }
     }),
     {}
   );
 };
 
-const defaults = {
-  mapProps: props => props
-};
-
 const withRematch = (model, config = defaults) => WrappedComponent => {
-  const factory = React.createFactory(WrappedComponent);
-  const reducer = createReducer(model);
-
   class WithRematch extends React.Component {
-    init() {
-      const {dispatch, state, getState, ...props} = this.props;
-      const actions = createActions(model, dispatch, props);
-      const effects = createEffects(model, dispatch, actions, getState, props);
+    constructor() {
+      super();
+      this.reducer = createReducer(model);
+      this._refs = {};
+      this.state = {
+        stateValue: this.initializeStateValue()
+      };
+    }
+
+    registerRef(path, ref) {
+      return (this._refs[path] = ref);
+    }
+
+    getRef(path) {
+      return this._refs[path];
+    }
+
+    initializeStateValue() {
+      if (model.state !== undefined) {
+        return typeof model.state === 'function'
+          ? model.state(this.props)
+          : model.state;
+      }
+      return this.reducer(undefined, {type: '@@withReducer/INIT'});
+    }
+
+    dispatch(action, callback = noop) {
+      this.setState(
+        ({stateValue}) => ({stateValue: this.reducer(stateValue, action)}),
+        () => callback(this.state.stateValue)
+      );
+    }
+
+    getState() {
+      return this.state.stateValue;
+    }
+
+    init(helpers) {
+      const dispatch = this.dispatch.bind(this);
+      const getState = this.getState.bind(this);
+      const getRef = this.getRef.bind(this);
+      const state = this.state.stateValue;
+      const {...props} = this.props;
+      const actions = createActions(model, dispatch, props, getRef);
+      const effects = createEffects(
+        model,
+        dispatch,
+        actions,
+        getState,
+        props,
+        getRef,
+        helpers
+      );
       this.actions = {...actions, ...effects};
+      this.data = model.data;
       return {state, actions: this.actions};
     }
 
@@ -146,19 +175,34 @@ const withRematch = (model, config = defaults) => WrappedComponent => {
       }
     }
 
+    getChildContext(...args) {
+      if (model.lifecycle && model.lifecycle.getChildContext) {
+        return model.lifecycle.getChildContext.call(this, ...args);
+      }
+    }
+
     render() {
-      const {state, actions} = this.init();
+      const helpers = {registerRef: this.registerRef.bind(this)};
+      const {state, actions} = this.init(helpers);
 
       const modelProps = config.mapProps({
         state: state,
-        actions: actions
+        actions: actions,
+        helpers
       });
 
-      return factory({...this.props, ...modelProps});
+      return React.createElement(WrappedComponent, {
+        ...this.props,
+        ...modelProps
+      });
     }
   }
 
-  return withReducer(reducer)(WithRematch);
+  WithRematch.propTypes = model.propTypes || null;
+  WithRematch.contextTypes = model.contextTypes || null;
+  WithRematch.childContextTypes = model.childContextTypes || null;
+
+  return WithRematch;
 };
 
 export default withRematch;

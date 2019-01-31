@@ -1990,66 +1990,15 @@
 	function objectWithoutProperties (obj, exclude) { var target = {}; for (var k in obj) if (Object.prototype.hasOwnProperty.call(obj, k) && exclude.indexOf(k) === -1) target[k] = obj[k]; return target; }
 
 	var noop = function () {};
+	var defaults = {
+	  mapProps: function (props) { return props; }
+	};
 
 	/**
 	|--------------------------------------------------
-	| WithReducer
+	| COMPONENTE
 	|--------------------------------------------------
 	*/
-
-	var withReducer = function (reducer, initialState) { return function (BaseComponent) {
-	  var factory = react.createFactory(BaseComponent);
-	  var WithReducer = /*@__PURE__*/(function (superclass) {
-	    function WithReducer() {
-	      superclass.call(this);
-	      this.state = {
-	        stateValue: this.initializeStateValue()
-	      };
-	    }
-
-	    if ( superclass ) WithReducer.__proto__ = superclass;
-	    WithReducer.prototype = Object.create( superclass && superclass.prototype );
-	    WithReducer.prototype.constructor = WithReducer;
-
-	    WithReducer.prototype.initializeStateValue = function initializeStateValue () {
-	      if (initialState !== undefined) {
-	        return typeof initialState === 'function'
-	          ? initialState(this.props)
-	          : initialState;
-	      }
-	      return reducer(undefined, {type: '@@withReducer/INIT'});
-	    };
-
-	    WithReducer.prototype.dispatch = function dispatch (action, callback) {
-	      var this$1 = this;
-	      if ( callback === void 0 ) callback = noop;
-
-	      this.setState(
-	        function (ref) {
-	          var stateValue = ref.stateValue;
-
-	          return ({
-	          stateValue: reducer(stateValue, action)
-	        });
-	      },
-	        function () { return callback(this$1.state.stateValue); }
-	      );
-	    };
-
-	    WithReducer.prototype.render = function render () {
-	      var this$1 = this;
-
-	      return factory(Object.assign({}, this.props,
-	        {state: this.state.stateValue,
-	        dispatch: this.dispatch.bind(this),
-	        getState: function () { return this$1.state.stateValue; }}));
-	    };
-
-	    return WithReducer;
-	  }(react.Component));
-
-	  return WithReducer;
-	}; };
 
 	/**
 	|--------------------------------------------------
@@ -2076,7 +2025,15 @@
 	  );
 	};
 
-	var createEffects = function (model, dispatch, actions, getState, props) {
+	var createEffects = function (
+	  model,
+	  dispatch,
+	  actions,
+	  getState,
+	  props,
+	  getRef,
+	  helpers
+	) {
 	  if (!model.effects) { return {}; }
 	  var effects = model.effects(actions);
 	  return Object.keys(effects || []).reduce(
@@ -2085,43 +2042,86 @@
 
 	      return (Object.assign({}, actions,
 	      ( obj = {}, obj[type] = function (payload) {
-	        return effects[type](payload, getState(), props);
+	        return effects[type](payload, getState(), props, helpers, getRef);
 	      }, obj )));
 	  },
 	    {}
 	  );
 	};
 
-	var defaults = {
-	  mapProps: function (props) { return props; }
-	};
-
 	var withRematch = function (model, config) {
 	  if ( config === void 0 ) config = defaults;
 
 	  return function (WrappedComponent) {
-	  var factory = react.createFactory(WrappedComponent);
-	  var reducer = createReducer(model);
-
 	  var WithRematch = /*@__PURE__*/(function (superclass) {
-	    function WithRematch () {
-	      superclass.apply(this, arguments);
+	    function WithRematch() {
+	      superclass.call(this);
+	      this.reducer = createReducer(model);
+	      this._refs = {};
+	      this.state = {
+	        stateValue: this.initializeStateValue()
+	      };
 	    }
 
 	    if ( superclass ) WithRematch.__proto__ = superclass;
 	    WithRematch.prototype = Object.create( superclass && superclass.prototype );
 	    WithRematch.prototype.constructor = WithRematch;
 
-	    WithRematch.prototype.init = function init () {
+	    WithRematch.prototype.registerRef = function registerRef (path, ref) {
+	      return (this._refs[path] = ref);
+	    };
+
+	    WithRematch.prototype.getRef = function getRef (path) {
+	      return this._refs[path];
+	    };
+
+	    WithRematch.prototype.initializeStateValue = function initializeStateValue () {
+	      if (model.state !== undefined) {
+	        return typeof model.state === 'function'
+	          ? model.state(this.props)
+	          : model.state;
+	      }
+	      return this.reducer(undefined, {type: '@@withReducer/INIT'});
+	    };
+
+	    WithRematch.prototype.dispatch = function dispatch (action, callback) {
+	      var this$1 = this;
+	      if ( callback === void 0 ) callback = noop;
+
+	      this.setState(
+	        function (ref) {
+	          var stateValue = ref.stateValue;
+
+	          return ({stateValue: this$1.reducer(stateValue, action)});
+	      },
+	        function () { return callback(this$1.state.stateValue); }
+	      );
+	    };
+
+	    WithRematch.prototype.getState = function getState () {
+	      return this.state.stateValue;
+	    };
+
+	    WithRematch.prototype.init = function init (helpers) {
+	      var dispatch = this.dispatch.bind(this);
+	      var getState = this.getState.bind(this);
+	      var getRef = this.getRef.bind(this);
+	      var state = this.state.stateValue;
 	      var ref = this.props;
-	      var dispatch = ref.dispatch;
-	      var state = ref.state;
-	      var getState = ref.getState;
-	      var rest = objectWithoutProperties( ref, ["dispatch", "state", "getState"] );
+	      var rest = objectWithoutProperties( ref, [] );
 	      var props = rest;
-	      var actions = createActions(model, dispatch, props);
-	      var effects = createEffects(model, dispatch, actions, getState, props);
+	      var actions = createActions(model, dispatch, props, getRef);
+	      var effects = createEffects(
+	        model,
+	        dispatch,
+	        actions,
+	        getState,
+	        props,
+	        getRef,
+	        helpers
+	      );
 	      this.actions = Object.assign({}, actions, effects);
+	      this.data = model.data;
 	      return {state: state, actions: this.actions};
 	    };
 
@@ -2190,23 +2190,40 @@
 	      }
 	    };
 
+	    WithRematch.prototype.getChildContext = function getChildContext () {
+	      var ref;
+
+	      var args = [], len = arguments.length;
+	      while ( len-- ) args[ len ] = arguments[ len ];
+	      if (model.lifecycle && model.lifecycle.getChildContext) {
+	        return (ref = model.lifecycle.getChildContext).call.apply(ref, [ this ].concat( args ));
+	      }
+	    };
+
 	    WithRematch.prototype.render = function render () {
-	      var ref = this.init();
+	      var helpers = {registerRef: this.registerRef.bind(this)};
+	      var ref = this.init(helpers);
 	      var state = ref.state;
 	      var actions = ref.actions;
 
 	      var modelProps = config.mapProps({
 	        state: state,
-	        actions: actions
+	        actions: actions,
+	        helpers: helpers
 	      });
 
-	      return factory(Object.assign({}, this.props, modelProps));
+	      return react.createElement(WrappedComponent, Object.assign({}, this.props,
+	        modelProps));
 	    };
 
 	    return WithRematch;
 	  }(react.Component));
 
-	  return withReducer(reducer)(WithRematch);
+	  WithRematch.propTypes = model.propTypes || null;
+	  WithRematch.contextTypes = model.contextTypes || null;
+	  WithRematch.childContextTypes = model.childContextTypes || null;
+
+	  return WithRematch;
 	};
 	};
 
